@@ -1,0 +1,191 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+{% load static %}
+
+<div class="index-page-slider-section">
+    <div class="index-page-slider">
+        <div class="container">
+            <div class="index-page-slider__control">
+                <div class="index-page-slider__arrows">
+                    <button><i class="icon icon_arrow"></i></button>
+                    <button><i class="icon icon_arrow"></i></button>
+                </div>
+                <div class="index-page-slider__dots"></div>
+            </div>
+        </div>
+        <div class="index-page-slider__item-list">
+            {% for slide in slides %}
+            <div class="index-page-slider__item">
+                <div class="container">
+                    <div class="index-page-slider__item-content">
+                        <div class="index-page-slider__title">{{ slide.title }}</div>
+                        <div class="index-page-slider__text">{{ slide.subtitle }}</div>
+                        {% if slide.link %}
+                            <a class="btn btn_1" href="{{ slide.link }}">подробнее</a>
+                        {% endif %}
+                    </div>
+                    <img class="index-page-slider__bg" src="{{ slide.picture.url }}">
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div class="feature-section">
+    <div class="container">
+        <div class="feature-list">
+            {% for feature in features %}
+            <div class="feature">
+                <div class="feature__icon"
+                     style="min-width: {{ feature.picture.width }}px;min-height:{{ feature.picture.height }}px;background-image:url({{ feature.picture.url }})"></div>
+                <div class="feature__text">{{ feature.text }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div class="catalog-section" id="catalog">
+    <div class="container">
+        <h2 class="title title_h2">
+            <div class="title__text">{{ config.TITLE_1 }}</div>
+            <div class="title__divider"></div>
+        </h2>
+        <div class="product-list">
+            {% for product in products %}
+            <div class="product box">
+                <div class="box__content">
+                    <img class="product__img" src="{{ product.picture_card.url }}">
+                    <div class="product__text">{{ product.title }}</div>
+                    <a class="product__btn btn btn_2" href="product/{{ product.slug }}">подробнее</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div class="map-contact">
+    <div class="map-contact__map" id="map-container"></div>
+    <div class="container map-contact__container">
+        <div class="map-contact__box box">
+            <div class="box__content">
+
+                {% if contact_set.0.title %}
+                <h2 class="title title_h2">
+                    <div class="title__text">{{ contact_set.0.title }}</div>
+                    <div class="title__divider title__divider_left"></div>
+                </h2>
+                {% endif %}
+                {% if contact_set.0.subtitle %}
+                <h3 class="title title_h3">
+                    <div class="title__text">{{ contact_set.0.subtitle }}</div>
+                </h3>
+                {% endif %}
+                <div class="contact-list">
+                    {% if contact_set.0.phone %}
+                    <div class="contact">
+                        <i class="icon icon_phone contact__icon"></i>
+                        <span class="contact__text">
+                  {% for phone in contact_set.0.phone %}
+                    <a href="tel:{{ phone }}">{{ phone }}</a> {% if contact_set.0.phone|length > 1 and contact_set.0.phone|length > forloop.counter %}<br>{% endif %}
+                  {% endfor %}
+                  </span>
+                    </div>
+                    {% endif %}
+                    {% if contact_set.0.email %}
+                    <div class="contact">
+                        <i class="icon icon_email contact__icon"></i>
+                        <span class="contact__text">
+                  {% for email in contact_set.0.email %}
+                    <a href="mailto:{{ email }}">{{ email }}</a> {% if contact_set.0.email|length > 1 and contact_set.0.email|length > forloop.counter %}<br>{% endif %}
+                  {% endfor %}
+                  </span>
+                    </div>
+                    {% endif %}
+                    {% if contact_set.0.location %}
+                    <div class="contact">
+                        <i class="icon icon_placemark contact__icon"></i>
+                        <span class="contact__text">{{ contact_set.0.location }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://api-maps.yandex.ru/2.1/?apikey=c599d252-3a6f-4b64-872c-a529f6263f40&amp;lang=ru_RU"></script>
+<script>
+    if (Boolean(document.querySelector('#map-container'))) {
+        ymaps.ready(function (e) {
+            var myCenter = {{ contact_set.0.coordinates_center }};
+            var iconSize = [98, 140];
+            if (window.innerWidth < 860) {
+                var myCenter = {{ contact_set.0.coordinates_center_mobile }};
+                var iconSize = [66, 100];
+            }
+            var myMap = new ymaps.Map('map-container', {
+                    center: myCenter,
+                    zoom: 17,
+                    //controls: ['zoomControl', 'typeSelector', 'fullscreenControl', 'routeButtonControl']
+                    //controls: ['zoomControl', 'typeSelector', 'fullscreenControl', 'routeButtonControl']
+                }, {}),
+
+                // Создаём макет содержимого.
+                MyIconContentLayout = ymaps.templateLayoutFactory.createClass(
+                    '<div style="color: #FFFFFF; font-weight: bold;">$[properties.iconContent]</div>'
+                ),
+
+                myPlacemark = new ymaps.Placemark({{ contact_set.0.coordinates_placemark }}, {
+                    hintContent: '{{ config.LOGO_TEXT }}',
+                    balloonContent: '{{ contact_set.0.location|safe }}\n'
+                }, {
+                    // Опции.
+                    // Необходимо указать данный тип макета.
+                    iconLayout: 'default#image',
+                    // Своё изображение иконки метки.
+                    iconImageHref: '{% static "base/img/placemark.png" %}',
+                    // Размеры метки.
+                    iconImageSize: iconSize,
+                    // Смещение левого верхнего угла иконки относительно
+                    // её "ножки" (точки привязки).
+                    iconImageOffset: [-40, -118]
+                }),
+
+                myPlacemarkWithContent = new ymaps.Placemark({{ contact_set.0.coordinates_placemark }}, {
+                    hintContent: '',
+                    balloonContent: '',
+                    iconContent: ''
+                }, {
+                    // Опции.
+                    // Необходимо указать данный тип макета.
+                    iconLayout: 'default#imageWithContent',
+                    // Своё изображение иконки метки.
+                    iconImageHref: '',
+                    // Размеры метки.
+                    iconImageSize: [48, 48],
+                    // Смещение левого верхнего угла иконки относительно
+                    // её "ножки" (точки привязки).
+                    iconImageOffset: [-24, -24],
+                    // Смещение слоя с содержимым относительно слоя с картинкой.
+                    iconContentOffset: [15, 15],
+                    // Макет содержимого.
+                    iconContentLayout: MyIconContentLayout
+                });
+
+            myMap.geoObjects
+                .add(myPlacemark)
+                .add(myPlacemarkWithContent);
+
+            // myMap.behaviors.disable('scrollZoom');
+            myMap.controls.remove('zoomControl');
+            myMap.controls.remove('geolocationControl');
+            myMap.controls.remove('searchControl');
+            myMap.controls.remove('trafficControl');
+            myMap.controls.remove('typeSelector');
+            myMap.controls.remove('fullscreenControl');
+            myMap.controls.remove('rulerControl');
+        });
+    }
+</script>
+{% endblock %}

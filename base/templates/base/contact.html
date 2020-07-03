@@ -1,0 +1,192 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+{% load static %}
+
+<div class="contact-page">
+    <div class="article">
+        <div class="container">
+            <div class="crumbs">
+                <a class="crumbs__link" href="{% url 'base:home_page' %}">Главная
+                    <i class="icon icon_circle crumbs__icon"></i>
+                </a>
+                <a class="crumbs__link_current" href="">{{ config.TITLE_5 }}</a>
+            </div>
+            <div class="title title_h2 text_left">
+                <div class="title__text">{{ config.TITLE_5 }}</div>
+                <div class="title__divider title__divider_left"></div>
+            </div>
+
+            <div class="contact-list-of-lists">
+                {% for contact in contact_set %}
+                {% if forloop.counter == 1 or forloop.counter == 2 %}
+                {% else %}
+                <div class="contact-list-of-lists__item">
+                    {% if contact.title %}
+                    <h2 class="title title_30 title_left">
+                        <div class="title__text">{{ contact.title }}</div>
+                        <div class="title__divider title__divider_left"></div>
+                    </h2>
+                    {% endif %}
+                    {% if contact.subtitle %}
+                    <h3 class="title title_h3 title_left">
+                        <div class="title__text">{{ contact.subtitle }}</div>
+                    </h3>
+                    {% endif %}
+                    <div class="contact-list">
+                        {% if contact.phone %}
+                        <div class="contact">
+                            <i class="icon icon_phone contact__icon"></i>
+                            <span class="contact__text">
+                    {% for phone in contact.phone %}
+                      <a href="tel:{{ phone }}">{{ phone }}</a> {% if contact.phone|length > 1 and contact.phone|length > forloop.counter %}<br>{% endif %}
+                    {% endfor %}
+                    </span>
+                        </div>
+                        {% endif %}
+                        <div class="contact">
+                            <i class="icon icon_email contact__icon"></i>
+                            <span class="contact__text">
+                    {% for email in contact.email %}
+                      <a href="mailto:{{ email }}">{{ email }}</a> {% if contact.email|length > 1 and contact.email|length > forloop.counter %}<br>{% endif %}
+                    {% endfor %}
+                    </span>
+                        </div>
+                        {% if contact.location %}
+                        <div class="contact">
+                            <i class="icon icon_placemark contact__icon"></i>
+                            <span class="contact__text">{{ contact.location|safe }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="map-contact">
+            <div class="map-contact__map" id="map-container"></div>
+            <div class="container map-contact__container">
+                <div class="map-contact__box box" style="max-width:396px">
+                    <div class="box__content">
+                        {% if contact_set.1.title %}
+                        <h2 class="title title_h2">
+                            <div class="title__text">{{ contact_set.1.title }}</div>
+                            <div class="title__divider title__divider_left"></div>
+                        </h2>
+                        {% endif %}
+                        {% if contact_set.1.subtitle %}
+                        <h3 class="title title_h3">
+                            <div class="title__text">{{ contact_set.1.subtitle }}</div>
+                        </h3>
+                        {% endif %}
+                        <div class="contact-list">
+                            {% if contact_set.1.phone %}
+                            <div class="contact">
+                                <i class="icon icon_phone contact__icon"></i>
+                                <span class="contact__text">
+                      {% for phone in contact_set.1.phone %}
+                        <a href="tel:{{ phone }}">{{ phone }}</a> {% if contact_set.1.phone|length > 1 and contact_set.1.phone|length > forloop.counter %}<br>{% endif %}
+                      {% endfor %}
+                      </span>
+                            </div>
+                            {% endif %}
+                            <div class="contact">
+                                <i class="icon icon_email contact__icon"></i>
+                                <span class="contact__text">
+                      {% for email in contact_set.1.email %}
+                        <a href="mailto:{{ email }}">{{ email }}</a> {% if contact_set.1.email|length > 1 and contact_set.1.email|length > forloop.counter %}<br>{% endif %}
+                      {% endfor %}
+                      </span>
+                            </div>
+                            <div class="contact">
+                                <i class="icon icon_placemark contact__icon"></i>
+                                <span class="contact__text">{{ contact_set.1.location|safe }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://api-maps.yandex.ru/2.1/?apikey=c599d252-3a6f-4b64-872c-a529f6263f40&amp;lang=ru_RU"></script>
+<script>
+    if (Boolean(document.querySelector('#map-container'))) {
+        ymaps.ready(function (e) {
+            var myCenter = {{ contact_set.1.coordinates_center }};
+            var iconSize = [98, 140];
+            if (window.innerWidth < 860) {
+                var myCenter = {{ contact_set.1.coordinates_center_mobile }};
+                var iconSize = [66, 100];
+            }
+            var myMap = new ymaps.Map('map-container', {
+                    center: myCenter,
+                    zoom: 17,
+                    //controls: ['zoomControl', 'typeSelector', 'fullscreenControl', 'routeButtonControl']
+                    //controls: ['zoomControl', 'typeSelector', 'fullscreenControl', 'routeButtonControl']
+                }, {}),
+
+                // Создаём макет содержимого.
+                MyIconContentLayout = ymaps.templateLayoutFactory.createClass(
+                    '<div style="color: #FFFFFF; font-weight: bold;">$[properties.iconContent]</div>'
+                ),
+
+                myPlacemark = new ymaps.Placemark({{ contact_set.1.coordinates_placemark }},
+            {
+                hintContent: '{{ config.LOGO_TEXT }}',
+                    balloonContent: '{{ contact_set.1.location|safe }}\n'
+            },
+            {
+                // Опции.
+                // Необходимо указать данный тип макета.
+                iconLayout: 'default#image',
+                    // Своё изображение иконки метки.
+                    iconImageHref:'{% static "base/img/placemark.png" %}',
+                    // Размеры метки.
+                    iconImageSize:
+                iconSize,
+                    // Смещение левого верхнего угла иконки относительно
+                    // её "ножки" (точки привязки).
+                    iconImageOffset:[-40, -118]
+            }
+        ),
+
+            myPlacemarkWithContent = new ymaps.Placemark({{ contact_set.1.coordinates_placemark }}, {
+                hintContent: '',
+                balloonContent: '',
+                iconContent: ''
+            }, {
+                // Опции.
+                // Необходимо указать данный тип макета.
+                iconLayout: 'default#imageWithContent',
+                // Своё изображение иконки метки.
+                iconImageHref: '',
+                // Размеры метки.
+                iconImageSize: [48, 48],
+                // Смещение левого верхнего угла иконки относительно
+                // её "ножки" (точки привязки).
+                iconImageOffset: [-24, -24],
+                // Смещение слоя с содержимым относительно слоя с картинкой.
+                iconContentOffset: [15, 15],
+                // Макет содержимого.
+                iconContentLayout: MyIconContentLayout
+            });
+
+            myMap.geoObjects
+                .add(myPlacemark)
+                .add(myPlacemarkWithContent);
+
+            // myMap.behaviors.disable('scrollZoom');
+            myMap.controls.remove('zoomControl');
+            myMap.controls.remove('geolocationControl');
+            myMap.controls.remove('searchControl');
+            myMap.controls.remove('trafficControl');
+            myMap.controls.remove('typeSelector');
+            myMap.controls.remove('fullscreenControl');
+            myMap.controls.remove('rulerControl');
+        });
+    }
+</script>
+{% endblock %}

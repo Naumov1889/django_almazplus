@@ -1,0 +1,14 @@
+asgiref==3.2.7
+Django==3.0.4
+django-admin-sortable2==0.7.6
+django-autoslug==1.9.6
+django-ckeditor==5.9.0
+django-cleanup==4.0.0
+django-constance==2.6.0
+django-js-asset==1.2.2
+django-picklefield==2.1.1
+Pillow==7.0.0
+python-decouple==3.3
+pytils==0.3
+pytz==2019.3
+sqlparse==0.3.1

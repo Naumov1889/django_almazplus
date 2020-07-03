@@ -1,0 +1,167 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru-Ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, width=device-width">
+    <title>ООО Алмаз</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.2/tiny-slider.css">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i&amp;display=swap&amp;subset=cyrillic">
+    <link rel="stylesheet" href="{% static 'base/css/concat-css-libs.css' %}">
+    <link rel="stylesheet" href="{% static 'base/css/concat-css.css' %}">
+    <link rel="shortcut icon" href="/media/{{ config.FAVICON }}" type="image/x-icon">
+    <link rel="icon" href="/media/{{ config.FAVICON }}" type="image/x-icon">
+</head>
+<body>
+<div class="sidebar">
+    <div class="nav">
+        <a class="nav__item" href="{% url 'base:home_page' %}">Главная</a>
+        <a class="nav__item" href="{% url 'base:about_page' %}">{{ config.TITLE_6 }}</a>
+        <a class="nav__item" href="{% url 'base:vacancy' %}">{{ config.TITLE_2 }}</a>
+        <a class="nav__item" href="{% url 'base:contact_page' %}">{{ config.TITLE_5 }}</a>
+        <a class="nav__item js-sidebar-nav-item" data-popbox-target="popbox-callback">Заказать звонок</a>
+    </div>
+</div>
+<div class="pusher">
+    <header class="header">
+        <div class="container header__container"><a class="logo header__logo" href="{% url 'base:home_page' %}"><img
+                class="logo__img" src="/media/{{ config.LOGO_IMG }}"><span
+                class="logo__text">{{ config.LOGO_TEXT }}</span></a>
+            <div class="header__contact-list">
+                {% if contact_set.0.email %}
+                <div class="contact">
+                    <i class="icon icon_email contact__icon"></i>
+                    <span class="contact__text">
+              {% for email in contact_set.0.email %}
+                <a href="mailto:{{ email }}">{{ email }}</a> {% if contact_set.0.email|length > 1 and contact_set.0.email|length > forloop.counter %}<br>{% endif %}
+              {% endfor %}
+              </span>
+                </div>
+                {% endif %}
+                {% if contact_set.0.phone %}
+                <div class="contact">
+                    <i class="icon icon_phone contact__icon"></i>
+                    <span class="contact__text">
+              {% for phone in contact_set.0.phone %}
+                <a href="tel:{{ phone }}">{{ phone }}</a> {% if contact_set.0.phone|length > 1 and contact_set.0.phone|length > forloop.counter %}<br>{% endif %}
+              {% endfor %}
+              </span>
+                </div>
+                {% endif %}
+            </div>
+            <a class="btn btn_2 header__callback-btn" data-popbox-target="popbox-callback">Заказать звонок</a>
+            <button class="burger header__burger"><i></i></button>
+        </div>
+    </header>
+    <div class="subheader">
+        <div class="container nav">
+            <a class="nav__item" href="{% url 'base:home_page' %}">Главная</a>
+            <a class="nav__item" href="{% url 'base:about_page' %}">{{ config.TITLE_6 }}</a>
+            <a class="nav__item" href="{% url 'base:vacancy' %}">{{ config.TITLE_2 }}</a>
+            <a class="nav__item" href="{% url 'base:contact_page' %}">{{ config.TITLE_5 }}</a>
+        </div>
+    </div>
+
+    {% block content %}
+    {% endblock %}
+
+
+    <footer class="footer">
+        <div class="container footer__container"><a class="logo footer__logo" href="{% url 'base:home_page' %}"><img
+                class="logo__img" src="/media/{{ config.LOGO_IMG }}"><span
+                class="logo__text">{{ config.LOGO_TEXT }}</span></a>
+            <div class="footer__policy-n-terms"><a href="{% url 'base:confidentiality_page' %}">{{ config.TITLE_3 }}</a><a href="{% url 'base:terms_page' %}">{{ config.TITLE_4 }}</a></div>
+            <div class="footer__author-n-copyright"><span class="footer__author">{{ config.AUTHOR|safe }}</span><span
+                    class="footer__copyright">{{ config.COPYRIGHT|safe }}</span></div>
+        </div>
+    </footer>
+</div>
+<div class="overlay"></div>
+<div class="popbox" data-popbox-id="popbox-callback">
+    <div class="popbox_container popbox_container_narrow box"><i class="icon popbox__cross"
+                                                                 data-popbox-close="popbox-callback"
+                                                                 style="width:16px;height:16px;background-image: url({% static 'base/img/icon-cross.svg' %})"></i>
+        <div class="box__content">
+            <h3 class="title title_h3"><span class="title__text">{{ config.CALLBACK_TITLE }}</span><span
+                    class="title__divider title__divider_small"></span></h3>
+            <div class="subtitle">
+                {{ config.CALLBACK_SUBTITLE }}
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="input-container"><i class="icon icon_user input-container__icon"></i>
+                    <!--              <input class="input input-container__input" required name="name" placeholder="Ваше имя">-->
+                    {{ callback_form.name }}
+                </div>
+                <div class="input-container"><i class="icon icon_phone input-container__icon"></i>
+                    <!--              <input class="input input-container__input" required name="phone" placeholder="Ваш телефон">-->
+                    {{ callback_form.phone }}
+                </div>
+                <button class="btn btn_1 js-callback-btn">заказать звонок</button>
+                <label class="checkbox"><span class="checkbox__text">Даю согласие на обработку  моих <a
+                        class="text_color_primary" href="{% url 'base:confidentiality_page' %}">персональных данных</a></span>
+                    <input class="checkbox__input" checked type="checkbox"><span class="checkbox__checkmark"></span>
+                </label>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="popbox" data-popbox-id="popbox-vacancy">
+    <div class="popbox_container popbox_container_narrow box"><i class="icon popbox__cross"
+                                                                 data-popbox-close="popbox-vacancy"
+                                                                 style="width:16px;height:16px;background-image: url({% static 'base/img/icon-cross.svg' %})"></i>
+        <div class="box__content">
+            <h3 class="title title_h3"><span class="title__text">Откликнуться на вакансию <span
+                    class="vacancy-form-placeholder-text"></span></span><span
+                    class="title__divider title__divider_small"></span></h3>
+            <div class="subtitle">Оставьте свои контакты, наш менеджер свяжется с вами в течении 15 минут</div>
+            <form method="post">
+                {% csrf_token %}
+                <input class="vacancy-form-placeholder-input" name="vacancy" type="hidden">
+                <div class="input-container"><i class="icon icon_user input-container__icon"></i>
+                    <!--              <input class="input input-container__input" required name="name" placeholder="Ваше имя">-->
+                    {{ callback_form.name }}
+                </div>
+                <div class="input-container"><i class="icon icon_phone input-container__icon"></i>
+                    <!--              <input class="input input-container__input" required name="phone" placeholder="Ваш телефон">-->
+                    {{ callback_form.phone }}
+                </div>
+                <button class="btn btn_1 js-callback-btn">Откликнуться</button>
+                <label class="checkbox"><span class="checkbox__text">Даю согласие на обработку  моих <a
+                        class="text_color_primary" href="{% url 'base:confidentiality_page' %}">персональных данных</a></span>
+                    <input class="checkbox__input" checked type="checkbox"><span class="checkbox__checkmark"></span>
+                </label>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="popbox js-popbox-callback-result" data-popbox-id="popbox-callback-result">
+    <div class="popbox_container popbox_container_narrow box">
+        <div class="box__content"><i class="icon popbox__cross" data-popbox-close="popbox-callback-result"
+                                     style="width:16px;height:16px;background-image: url({% static 'base/img/icon-cross.svg' %})"></i>
+            <h2 style="margin-bottom: 0;" class="title_h2"></h2>
+        </div>
+    </div>
+</div>
+<div class="my-spinner lds-spinner">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.2/min/tiny-slider.js"></script>
+<script src="{% static 'base/js/concat-js-libs.js' %}"></script>
+<script src="{% static 'base/js/common.js' %}"></script>
+
+</body>
+</html>

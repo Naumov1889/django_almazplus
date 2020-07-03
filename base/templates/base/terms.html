@@ -1,0 +1,20 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+{% load static %}
+<div class="terms-section">
+    <div class="container">
+        <div class="crumbs">
+            <a class="crumbs__link" href="{% url 'base:home_page' %}">Главная
+                <i class="icon icon_circle crumbs__icon"></i>
+            </a>
+            <a class="crumbs__link_current" href="">{{ config.TITLE_4 }}</a>
+        </div>
+        <div class="title title_h2 text_left">
+            <div class="title__text">{{ config.TITLE_4 }}</div>
+            <div class="title__divider title__divider_left"></div>
+        </div>
+       {{ text.terms|safe }}
+    </div>
+</div>
+{% endblock %}

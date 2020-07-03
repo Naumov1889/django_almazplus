@@ -1,0 +1,83 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+{% load static %}
+<div class="product-page">
+    <div class="product-header">
+        <div class="product-header__container container">
+            <div class="product-header__text">
+                <div class="product-header__title">{{ product.title }}</div>
+                <div class="product-header__subtitle">{{ product.subtitle }}</div>
+            </div>
+            <img class="product-header__bg" src="{{ product.picture_article.url }}">
+        </div>
+    </div>
+    <div class="article">
+        <div class="container">
+            <div class="crumbs">
+                <a class="crumbs__link" href="{% url 'base:home_page' %}">
+                    Главная
+                    <i class="icon icon_circle crumbs__icon"></i>
+                </a>
+                <a class="crumbs__link_current" href="">{{ product.title }}</a>
+            </div>
+        </div>
+
+        {{ product.text|safe }}
+
+        <div class="container">
+            <div class="article-desktop"><br></div>
+            <b class="product-form-title" style="display: block; font-size: 22px; margin-bottom: 1rem">Оформление
+                товара</b>
+            <form class="product-form" method="POST">
+                {% csrf_token %}
+                <input name="product" type="hidden" value="{{ product.title|lower }}">
+                <div class="input-container"><i class="icon icon_user input-container__icon"
+                                                style="min-width: 15px;min-height:19px"></i>
+                    <!--                <input class="input input-container__input" required name="name" placeholder="Имя">-->
+                    {{ callback_form.name }}
+                </div>
+                <div class="input-container"><i class="icon icon_phone input-container__icon"
+                                                style="min-width: 18px;min-height: 19px;"></i>
+                    <!--                <input class="input input-container__input" required name="phone" placeholder="Номер телефона">-->
+                    {{ callback_form.phone }}
+                </div>
+                <div class="input-container"><i class="icon icon_email input-container__icon"
+                                                style="min-width: 19px;min-height: 14px;"></i>
+                    <!--                <input class="input input-container__input" required name="email" placeholder="E-mail">-->
+                    {{ callback_form.email }}
+                </div>
+                <button class="btn btn_1 js-callback-btn" type="submit">заказать звонок</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+
+    .article ul {
+       font-size: inherit;
+       list-style-type: disc;
+       list-style-position: inside;
+    }
+    .article ol {
+       font-size: inherit;
+       list-style-type: decimal;
+       list-style-position: inside;
+    }
+    .article ul ul, .article ol ul {
+       list-style-type: circle;
+       list-style-position: inside;
+       margin-left: 15px;
+    }
+    .article ol ol, .article ul ol {
+       list-style-type: lower-latin;
+       list-style-position: inside;
+       margin-left: 15px;
+    }
+    .article li {
+        font-size: inherit;
+        list-style: unset;
+    }
+</style>
+{% endblock %}

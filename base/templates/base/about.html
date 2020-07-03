@@ -1,0 +1,37 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+{% load static %}
+      <div class="about-page">
+        <div class="article">
+          <div class="container">
+            <div class="crumbs">
+              <a class="crumbs__link" href="{% url 'base:home_page' %}">
+                Главная
+                <i class="icon icon_circle crumbs__icon"></i>
+              </a>
+              <a class="crumbs__link_current" href="">{{ config.TITLE_6 }}</a>
+            </div>
+            <div class="title title_h2 text_left">
+              <div class="title__text">{{ config.TITLE_6 }}</div>
+              <div class="title__divider title__divider_left"></div>
+            </div>
+          </div>
+          {{ about_page_text.text|safe }}
+          <div class="container">
+            <div class="gallery-slider-container">
+              <div class="gallery js-gallery-slider">
+                {% for about_page_img in about_page_imgs %}
+                <div class="gallery-slider__item">
+                  <div class="box">
+                    <div class="box__content"><img src="{{ about_page_img.picture.url }}"></div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div><img class="about-page__map" src="/media/{{ config.ABOUT_PAGE_MAP_BG }}">
+          </div>
+        </div>
+      </div>
+
+{% endblock %}
